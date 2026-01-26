@@ -110,7 +110,7 @@ dp_CRPwithAtoms_mixmodel_normal_normal <- function(
       # existing: proportional to n_k * pred(y_i | cluster k)
       logw_exist <- numeric(H)
       for (k in seq_len(H)) {
-        logw_exist[k] <- log(n_k[k]) + dnorm(y_i, mus[k], 1) 
+        logw_exist[k] <- log(n_k[k]) + dnorm(y_i, mus[k], 1, log = TRUE) 
       }
       
       # new: proportional to alpha * prior_pred(y_i)
@@ -134,9 +134,9 @@ dp_CRPwithAtoms_mixmodel_normal_normal <- function(
         c[i]  = H + 1L
         n_k   = c(n_k, 1L)
         sum_k = c(sum_k, y_i)
-        au2_n = 1 / (1 / sigma2 + 1 / tau20)
+        tau2_n = 1 / (1 / sigma2 + 1 / tau20)
         mu_n   = tau2_n * (y_i / sigma2 + mu0 / tau20)
-        mus   = c(mus, rnorm(1, mean = mu_n, sd = sqrt(tau2_n)) )
+        mus    = c(mus, rnorm(1, mean = mu_n, sd = sqrt(tau2_n)) )
       }
     }
     
@@ -154,7 +154,7 @@ dp_CRPwithAtoms_mixmodel_normal_normal <- function(
     
     alpha = rgamma(1, 3 + H, 3*log(n) - log(rbeta(1, 1, alpha, n)) )
     
-    if(t == 10){
+    if(t <= 10){
       if(difftime(Sys.time(), start.time, units = "secs")> 1){
         message("1 sec threshold reached - aborted")
       return(list(

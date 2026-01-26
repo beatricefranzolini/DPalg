@@ -119,7 +119,7 @@ dp_slice_mixmodel_normal_normal <- function(
     out_H[store_idx]      = H
     out_phis[[store_idx]] = phis
     
-    if(t == 10){
+    if(t <= 10){
       if(difftime(Sys.time(), start.time, units = "secs")> 1){
         message("1 sec threshold reached - aborted")
       return(list(

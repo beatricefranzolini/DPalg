@@ -154,14 +154,14 @@ dp_CRPnoAtoms_mixmodel_normal_normal <- function(
     }
     alpha = rgamma(1, 3 + H, 3*log(n) - log(rbeta(1, 1, alpha, n)) )
     
-    if(t == 10){
+    if(t <= 10){
       if(difftime(Sys.time(), start.time, units = "secs")> 1){
         message("1 sec threshold reached - aborted")
       return(list(
         c_samples = c_samples,
         H    = H_trace,
         phis = mu_samples,
-        time      = Sys.time() - start.time
+        time = Sys.time() - start.time
       ) )
       }
     }  

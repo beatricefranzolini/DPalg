@@ -84,7 +84,7 @@ dp_BGS_mixmodel_normal_normal <- function(
     out_phis[[store_idx]] = phis
     out_H[store_idx]      = H
     
-    if(t == 10){
+    if(t <= 10){
       if(difftime(Sys.time(), start.time, units = "secs")> 1){
         message(" 1 sec threshold reached - aborted")
         return(list(

@@ -6,9 +6,8 @@ dp_loglik_trace_mixmodel_normal_normal <- function(Y, fit, hyper = c(1, 0, 1)) {
   if (is.list(Y)) Y <- unlist(Y)
   Y = as.numeric(Y)
   
-  stopifnot(!is.null(fit$c_samples), !is.null(fit$phis))
   S = length(fit$c_samples)
-  stopifnot(S == length(fit$phis))
+  if (is.null(fit$phis[[S]])){return(NULL)}
   
   ll = numeric(S)
   
@@ -31,4 +30,28 @@ relabel_to_consecutive <- function(c) {
   labs   = sort(unique(c))
   new_id = match(c, labs) 
   list(c = new_id, labs = labs)
+}
+
+# --- helper to make a data frame for ggplot ---
+mk_df <- function(x) {
+  data.frame(time = seq_along(x), value = as.numeric(x))
+}
+
+# --- helper to evaluate rand index ---
+rand_index_evaluation <- function(c_true, fit) {
+  
+  S = length(fit$c_samples)
+  if (is.null(fit$phis[[S]])){return(NULL)}
+  
+  ll = numeric(S)
+  
+  for (t in seq_len(S)) {
+    c_t    = fit$c_samples[[t]]
+
+    c_t = as.integer(c_t)
+    
+    ll[t] = rand.index(c_true,c_t)
+  }
+  
+  ll
 }

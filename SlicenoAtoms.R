@@ -28,7 +28,7 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
     # Posterior of phi_k | y_idx ~ N(mean_n, tau2_n)
     tau2_n  =  1 / (n_h / sigma2 + 1 / tau20)
     mu_n    =  tau2_n * (sum_k / sigma2 + mu0 / tau20)
-    rnorm(1, mu_n, sqrt(tau2_n))
+    rnorm(H, mu_n, sqrt(tau2_n))
   }
   
   prior <- function(x){rnorm(1, mu0, sqrt(tau20))}
@@ -147,7 +147,7 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
     out_H[store_idx]      = H
     out_phis[[store_idx]] = phis
     
-    if(t == 10){
+    if(t <= 10){
       if(difftime(Sys.time(), start.time, units = "secs")> 1){
         message("1 sec threshold reached - aborted")
       return(list(

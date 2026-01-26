@@ -2,6 +2,13 @@
 library(LaplacesDemon)  # version 16.1.6         to sample from finite Dirichlet
 library(progress)       # version 1.2.3          to draw the progress bar
 #library(rstudioapi)    # version 0.17.1 (up in _main_to_run)
+library(ggplot2) #to plot
+library(patchwork)
+library(fossil) #to compute rand index
+library(salso)
+#library(dplyr)   #to plot
+#library(tidyr)   #to plot
+
 
 source("Slice.R")           #posterior Slice Sampler MCMC 
 source("SlicenoAtoms.R")    #posterior Slice Sampler MCMC with marginalized atoms
