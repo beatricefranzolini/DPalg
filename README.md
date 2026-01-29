@@ -1,13 +1,17 @@
 # DPalg
 R codes implementing MCMC algoritms for for DP mixture of univariate Normals
+
 Kernel:   y | mu ~ N(mu, sigma2)
+
 Base:     mu ~ N(mu0, tau20)
+
 DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
 
 **Authors**: [blinded](blinded) and [blinded](blinded)
 
 ## Citation 
 Please cite the following publication if you use this repository in your research: 
+
 [blinded](blinded) and [blinded](blinded), Complexity bounds for Dirichlet process slice samplers.
 
 ## Contents 
@@ -33,12 +37,18 @@ Please cite the following publication if you use this repository in your researc
 `utils`           -> contains helper functions for the MCMCs
 
 #### R libraries needed to run the scripts
-library(LaplacesDemon)  # version 16.1.6      to sample from finite Dirichlet
-library(progress)       # version 1.2.3       to draw the progress bar
-#library(rstudioapi)    # version 0.17.1      to set working directory
-library(ggplot2)        # version 4.0.1       to plot
-library(patchwork)      # version 1.3.2       to plot
-library(fossil)         # version 0.4.0       to compute rand index
+library(LaplacesDemon)  # version 16.1.6      to sample from finite Dirichlet  
+
+library(progress)       # version 1.2.3       to draw the progress bar  
+
+library(rstudioapi)     # version 0.17.1      to set working directory  
+
+library(ggplot2)        # version 4.0.1       to plot  
+
+library(patchwork)      # version 1.3.2       to plot  
+
+library(fossil)         # version 0.4.0       to compute rand index  
+
 library(salso)          # version 0.3.53      to compute psm and point estimate
 
 #### Questions or bugs
