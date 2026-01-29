@@ -36,7 +36,7 @@ Please cite the following publication if you use this repository in your researc
 
 `utils`           -> contains helper functions for the MCMCs
 
-#### R libraries needed to run the scripts
+### R libraries needed to run the scripts
 library(LaplacesDemon)  # version 16.1.6      to sample from finite Dirichlet  
 
 library(progress)       # version 1.2.3       to draw the progress bar  
@@ -51,5 +51,5 @@ library(fossil)         # version 0.4.0       to compute rand index
 
 library(salso)          # version 0.3.53      to compute psm and point estimate
 
-#### Questions or bugs
+### Questions or bugs
 For bug reporting purposes, e-mail [blinded] (blinded) (author@author.me).
