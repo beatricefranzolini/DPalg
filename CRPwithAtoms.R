@@ -1,18 +1,43 @@
-# Collapsed Gibbs sampler (CRP marginal) for DP mixture of univariate Normals
-# Kernel:   y | mu ~ N(mu, sigma2)
-# Base:     mu ~ N(mu0, tau20)
-# DP:       G ~ DP(alpha, N(mu0, tau20))
-#
-# Updates:  resample each c_i given others, integrating out mus
-#
-# Returns:  c_samples, H_trace, and optionally sampled mus
+################################################################################
+## this code contains the MCMC function to run the CRP with atoms
+#  for DP mixture of univariate Normals
+#  Kernel:   y | mu ~ N(mu, sigma2)
+#  Base:     mu ~ N(mu0, tau20)
+#  DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
+################################################################################
+
+# -------------------------------------------------------------------------
+# Main sampler
+# Inputs:   Y      -> data as a n X 1 vector
+#           Tot    -> number of iterations 
+#           c_init -> initialization for the partition, 
+#                     if NULL is st to k-means solution with 5 clusters
+#           seed   -> seed 
+#           hyper  -> (kernel variance, base measure mean, base measure variance)
+# Outputs:   c_samples -> chain of clustering labels
+#            phis      -> chain of atoms
+#            H         -> chain of number of cluster
+#            time      -> wall-clock time needed to run the chain
+# -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
+# Example usage (toy):
+# -------------------------------------------------------------------------
+
+# Simulate data
+# set.seed(1)
+# Y <- rnorm(2000, mean = c(rep(-3,1000), rep(3,1000)), sd = 1)
+
+# Run sampler
+# fit_SS = dp_CRPwithAtoms_mixmodel_normal_normal(Y, seed = 0)
+# -------------------------------------------------------------------------
 
 dp_CRPwithAtoms_mixmodel_normal_normal <- function(
     Y,
     Tot = 3000,
-    hyper = c(sigma2 = 1, mu0 = 0, tau20 = 1),
     c_init = NULL,
-    seed = NULL
+    seed = NULL,
+    hyper = c(sigma2 = 1, mu0 = 0, tau20 = 1)
 ) {
   if (!is.null(seed)) set.seed(seed)
   
@@ -32,7 +57,6 @@ dp_CRPwithAtoms_mixmodel_normal_normal <- function(
   
   # --- initialize allocations ---
   if (is.null(c_init)) {
-    # simple init: random labels among a few clusters
     c = kmeans(Y, centers = min(5,n))$cluster
   } else {
     stopifnot(length(c_init) == n)
@@ -43,7 +67,6 @@ dp_CRPwithAtoms_mixmodel_normal_normal <- function(
   c   = tmp$c
   
   # --- cluster sufficient statistics ---
-  # We maintain:
   #   n_k: counts per cluster
   #   sum_k: sum of Y in cluster
   build_stats <- function(c) {
@@ -172,8 +195,8 @@ dp_CRPwithAtoms_mixmodel_normal_normal <- function(
   
   list(
     c_samples = c_samples,
-    H    = H_trace,
     phis = mu_samples,
+    H    = H_trace,
     time = end.time - start.time
   )
 }

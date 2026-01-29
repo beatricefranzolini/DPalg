@@ -1,8 +1,38 @@
-# Slice-Sampler 
+################################################################################
+## this code contains the MCMC function to run the slice sampler with no atoms
+#  for DP mixture of univariate Normals
+#  Kernel:   y | mu ~ N(mu, sigma2)
+#  Base:     mu ~ N(mu0, tau20)
+#  DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
+################################################################################
 
 # -------------------------------------------------------------------------
 # Main sampler
+# Inputs:   Y      -> data as a n X 1 vector
+#           Tot    -> number of iterations 
+#           c_init -> initialization for the partition, 
+#                     if NULL is st to k-means solution with 5 clusters
+#           seed   -> seed 
+#           hyper  -> (kernel variance, base measure mean, base measure variance)
+# Outputs:   c_samples -> chain of clustering labels
+#            phis      -> chain of atoms
+#            K         -> chain of dynamic truncation threshold
+#            H         -> chain of number of cluster
+#            time      -> wall-clock time needed to run the chain
 # -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
+# Example usage (toy):
+# -------------------------------------------------------------------------
+
+# Simulate data
+# set.seed(1)
+# Y <- rnorm(2000, mean = c(rep(-3,1000), rep(3,1000)), sd = 1)
+
+# Run sampler
+# fit_SS = dp_slicenoAtoms_mixmodel_normal_normal(Y, seed = 0)
+# -------------------------------------------------------------------------
+
 dp_slicenoAtoms_mixmodel_normal_normal <- function(
     Y,
     Tot = 3000,
@@ -15,9 +45,6 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
   tau20  = hyper[3]
   alpha  = 1
   
-  # --- predictive density under Normal-Normal (mu integrated out) ---
-  # For cluster with n_k, sum_y, posterior mu|data: N(mu_n, tau2_n)
-  # predictive y_new | data: N(mu_n, sigma2 + tau2_n)
   pred_logdens = function(y, n_k, sum_y) {
     tau2_n = 1 / (n_k / sigma2 + 1 / tau20)
     mu_n   = tau2_n * (sum_y / sigma2 + mu0 / tau20)
@@ -37,7 +64,6 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
   
   n = length(Y)
   if (is.null(c_init)) {
-    # simple init: all in one cluster
     c = kmeans(Y, 
                centers = min(5,n))$cluster
   } else {
@@ -74,25 +100,18 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
   
   for (t in seq_len(Tot)) {
     
-    
-    # ---- (2a) sample (pi_1,...,pi_H, pi_star) ~ Dirichlet(n_1,...,n_H, alpha) ----
     alpha_vec = c(n_h, alpha)
     dir_draw  = rdirichlet(n = 1, alpha_vec)
     pi        = dir_draw[seq_len(H)]
     pi_star   = dir_draw[H + 1L]
     
-    # ---- (3) sample slices u_i ~ Unif(0, pi_{c_i}) ----
     u      = runif(n, min = 0, max = pi[c])
     u_star = min(u)
     
-    # ---- (4) expand components until pi_star <= u_star ----
     K = H
     while (pi_star > u_star) {
       K = K + 1L
-      # sample new atom
-      #phis[K] = prior(0)
       
-      # sample stick piece from remaining mass
       vK      = rbeta(1L, shape1 = 1, shape2 = alpha)
       piK     = vK * pi_star
       pi      = c(pi, piK)
@@ -102,7 +121,6 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
       sum_k[K] = 0
     }
     
-    # ---- (5) update allocations ----
     for (i in seq_len(n)) {
       Ai = which(pi > u[i]) # active components for obs i
       if(length(Ai) == 1){
@@ -122,7 +140,6 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
       }
     }
     
-    # ---- (1) H and relabel c to 1..H ----
     temp_n   = n_h[unique(c)]
     temp_sum = sum_k[unique(c)]
     
@@ -135,7 +152,6 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
     n_h   = n_h[1:H]
     sum_k = sum_k[1:H]
     
-    # ---- (2b) sample phis from full-conditionals ----
     phis = post_sum(sum_k, n_h)
     
     alpha = rgamma(1, 3 + H, 3*log(n) - log(rbeta(1, 1, alpha, n)) )
@@ -172,23 +188,3 @@ dp_slicenoAtoms_mixmodel_normal_normal <- function(
     time      = end.time - start.time
   ) )
 }
-
-
-# -------------------------------------------------------------------------
-# Example usage (toy):
-# -------------------------------------------------------------------------
-
-# Simulate data
-# set.seed(1)
-# Y <- rnorm(2000, mean = c(rep(-3,1000), rep(3,1000)), sd = 1)
-
-# Run sampler
-# fit_SS = dp_slice_mixmodel_normal_normal(Y, seed = 0)
-
-# Compute log lik at each iteration
-# loglik_ss = dp_loglik_trace_mixmodel_normal_normal(Y, fit_SS)
-# plot(loglik_ss, type = "l", main = "SS")
-
-#num of clusters 
-# H = unlist(lapply(fit_SS$c_samples, function(x) length(unique(x))))
-# hist(H)

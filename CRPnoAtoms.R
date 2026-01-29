@@ -1,18 +1,44 @@
-# Collapsed Gibbs sampler (CRP marginal) for DP mixture of univariate Normals
-# Kernel:   y | mu ~ N(mu, sigma2)
-# Base:     mu ~ N(mu0, tau20)
-# DP:       G ~ DP(alpha, N(mu0, tau20))
-#
-# Updates:  resample each c_i given others, integrating out mus
-#
-# Returns:  c_samples, H_trace, and optionally sampled mus
+################################################################################
+## this code contains the MCMC function to run the CRP with atoms
+#  for DP mixture of univariate Normals
+#  Kernel:   y | mu ~ N(mu, sigma2)
+#  Base:     mu ~ N(mu0, tau20)
+#  DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
+################################################################################
+
+# -------------------------------------------------------------------------
+# Main sampler
+# Inputs:   Y      -> data as a n X 1 vector
+#           Tot    -> number of iterations 
+#           c_init -> initialization for the partition, 
+#                     if NULL is st to k-means solution with 5 clusters
+#           seed   -> seed 
+#           hyper  -> (kernel variance, base measure mean, base measure variance)
+#           sample_mus -> whether to sample atoms (either case are not use in full cond of c)
+# Outputs:   c_samples -> chain of clustering labels
+#            phis      -> chain of atoms
+#            H         -> chain of number of cluster
+#            time      -> wall-clock time needed to run the chain
+# -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
+# Example usage (toy):
+# -------------------------------------------------------------------------
+
+# Simulate data
+# set.seed(1)
+# Y <- rnorm(2000, mean = c(rep(-3,1000), rep(3,1000)), sd = 1)
+
+# Run sampler
+# fit_SS = dp_CRPnoAtoms_mixmodel_normal_normal(Y, seed = 0)
+# -------------------------------------------------------------------------
 
 dp_CRPnoAtoms_mixmodel_normal_normal <- function(
     Y,
     Tot = 3000,
-    hyper = c(sigma2 = 1, mu0 = 0, tau20 = 1),
     c_init = NULL,
     seed = NULL,
+    hyper = c(sigma2 = 1, mu0 = 0, tau20 = 1),
     sample_mus = TRUE
 ) {
   if (!is.null(seed)) set.seed(seed)
@@ -42,7 +68,6 @@ dp_CRPnoAtoms_mixmodel_normal_normal <- function(
   
   # --- initialize allocations ---
   if (is.null(c_init)) {
-    # simple init: random labels among a few clusters
     c = kmeans(Y, centers = min(5,n))$cluster
   } else {
     stopifnot(length(c_init) == n)
@@ -53,7 +78,6 @@ dp_CRPnoAtoms_mixmodel_normal_normal <- function(
   c   = tmp$c
   
   # --- cluster sufficient statistics ---
-  # We maintain:
   #   n_k: counts per cluster
   #   sum_k: sum of Y in cluster
   build_stats <- function(c) {
@@ -72,12 +96,13 @@ dp_CRPnoAtoms_mixmodel_normal_normal <- function(
   H_trace    = integer(Tot)
   mu_samples = if (sample_mus) vector("list", Tot) else NULL
   
-  store_idx = 0L
+  store_idx  = 0L
   start.time = Sys.time()             #save starting time 
   
   pb <- progress_bar$new(
     format = " MCMC [:bar] :percent Estimated completion time: :eta",
     total = Tot, clear = FALSE, width= 100)
+  
   # --- main Gibbs loop ---
   for (t in seq_len(Tot)) {
     
@@ -142,7 +167,7 @@ dp_CRPnoAtoms_mixmodel_normal_normal <- function(
     H_trace[store_idx] = length(n_k)
     
     if (sample_mus) {
-      # sample cluster means from posterior given current clusters (optional)
+      # sample cluster means from posterior given current clusters 
       H   = length(n_k)
       mus = numeric(H)
       for (k in seq_len(H)) {
@@ -171,25 +196,8 @@ dp_CRPnoAtoms_mixmodel_normal_normal <- function(
   end.time <- Sys.time() 
   list(
     c_samples = c_samples,
-    H    = H_trace,
     phis = mu_samples,
+    H    = H_trace,
     time = end.time - start.time
   )
 }
-
-# -------------------------
-# Example
-# -------------------------
-# Simulate data
-# set.seed(1)
-# Y <- rnorm(1000, mean = c(rep(-3,500), rep(3,500)), sd = 1)
-
-# fit_crp <- dp_CRPnoAtoms_mixmodel_normal_normal(Y, seed = 0)
-# summary(fit_crp$H)
-
-# Compute log lik at each iteration
-# loglik_crp = dp_loglik_trace_mixmodel_normal_normal(Y, fit_crp)
-# plot(loglik_crp, type = "l", main = "CRP")
-
-# hist(fit_crp$H)
-

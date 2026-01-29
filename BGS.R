@@ -1,6 +1,38 @@
+################################################################################
+## this code contains the MCMC function to run the block Gibbs sampler
+#  for DP mixture of univariate Normals
+#  Kernel:   y | mu ~ N(mu, sigma2)
+#  Base:     mu ~ N(mu0, tau20)
+#  DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
+################################################################################
+
 # -------------------------------------------------------------------------
 # Main sampler
+# Inputs:   Y      -> data as a n X 1 vector
+#           L      -> num. of component of the truncated approximation
+#           Tot    -> number of iterations 
+#           c_init -> initialization for the partition, 
+#                     if NULL is st to k-means solution with 5 clusters
+#           seed   -> seed 
+#           hyper  -> (kernel variance, base measure mean, base measure variance)
+# Outputs:   c_samples -> chain of clustering labels
+#            phis      -> chain of atoms
+#            H         -> chain of number of cluster
+#            time      -> wall-clock time needed to run the chain
 # -------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------
+# Example usage (toy):
+# -------------------------------------------------------------------------
+
+# Simulate data
+# set.seed(1)
+# Y <- rnorm(2000, mean = c(rep(-3,1000), rep(3,1000)), sd = 1)
+
+# Run sampler
+# fit_SS = dp_BGS_mixmodel_normal_normal(Y, seed = 0)
+# -------------------------------------------------------------------------
+
 dp_BGS_mixmodel_normal_normal <- function(
     Y,
     L = 10,
@@ -33,7 +65,6 @@ dp_BGS_mixmodel_normal_normal <- function(
   
   n = length(Y)
   if (is.null(c_init)) {
-    # simple init: all in one cluster
     c = kmeans(Y, 
                centers = min(5, L))$cluster
   } else {
@@ -55,18 +86,15 @@ dp_BGS_mixmodel_normal_normal <- function(
     total = Tot, clear = FALSE, width= 100)
   
   for (t in seq_len(Tot)) {
-    # ---- (1) counts
+
     n_h = tabulate(c, nbins = L)  # n_h[h] = sum_i 1(c_i=h)
     
-    # ---- (2a) sample (pi_1,...,pi_H, pi_star) ~ Dirichlet(n_1,...,n_H, alpha) ----
     pi  = rdirichlet(n = 1, n_h)
-    
-    # ---- (2b) sample phis from full-conditionals ----
+
     for(h in seq_len(L)){
       phis[h] = post(Y[c==h])
     }
     
-    # ---- (5) update allocations ----
     for (i in seq_len(n)) {
       # evaluate log-likelihoods for k in Ai
       logw = log(pi) + lik(Y[[i]], phis) 
