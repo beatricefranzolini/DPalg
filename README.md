@@ -1,5 +1,5 @@
 # DPalg
-R codes implementing MCMC algoritms for for DP mixture of univariate Normals
+R codes implementing MCMC algoritms for DP mixture of univariate Normals
 
 Kernel:   y | mu ~ N(mu, sigma2)
 
@@ -7,32 +7,30 @@ Base:     mu ~ N(mu0, tau20)
 
 DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
 
-**Authors**: [blinded](blinded) and [blinded](blinded)
+**Authors**: [Beatrice Franzolini](https://beatricefranzolini.github.io/) and [Francesco Gaffi](https://francescogaffi.github.io/)
 
 ## Citation 
-Please cite the following publication if you use this repository in your research: 
-
-[blinded](blinded) and [blinded](blinded), Complexity bounds for Dirichlet process slice samplers.
+Please cite the following publication if you use this repository in your research:  [Beatrice Franzolini](https://beatricefranzolini.github.io/) and [Francesco Gaffi](https://francescogaffi.github.io/), (2026). Complexity bounds for Dirichlet process slice samplers. ArXiv
 
 ## Contents 
 
-`_main_to_run1.R` -> runs the numerical experiment with 3 equally-sized clusters
+`_main_to_run1.R` runs the numerical experiment with 3 equally-sized clusters
 
-`_main_to_run2.R` -> runs the numerical experiment with perturbed zipf
+`_main_to_run2.R` runs the numerical experiment with perturbed zipf
 
-`BGS.R`           -> MCMC function to run the block Gibbs sampler
+`BGS.R`           MCMC function to run the block Gibbs sampler
 
-`CRPnoAtoms.R`    -> MCMC function to run the CRP with atoms
+`CRPnoAtoms.R`    MCMC function to run the CRP with atoms
 
-`CRPwithAtoms.R`  -> MCMC function to run the CRP with atoms
+`CRPwithAtoms.R`  MCMC function to run the CRP with atoms
 
-`DPalg.R`         -> this code sources the required functions and packages it is called by _main_to_run1.R and _main_to_run2.R
+`DPalg.R`         this code sources the required functions and packages it is called by _main_to_run1.R and _main_to_run2.R
 
-`Slice.R`         -> MCMC function to run the slice sampler
+`Slice.R`         MCMC function to run the slice sampler
 
-`SlicenoAtoms.R`  -> MCMC function to run the slice sampler with no atoms
+`SlicenoAtoms.R`  MCMC function to run the slice sampler with no atoms
 
-`utils`           -> contains helper functions for the MCMCs
+`utils`           contains helper functions for the MCMCs
 
 ## R libraries needed to run the scripts
 
@@ -52,4 +50,4 @@ library(salso)          # version 0.3.53      to compute psm and point estimate
 
 ## Questions or bugs
 
-For bug reporting purposes, e-mail [blinded] (blinded) (author@author.me).
+For bug reporting purposes, e-mail [Beatrice Franzolini](https://beatricefranzolini.github.io/) (franzolini@pm.me).
