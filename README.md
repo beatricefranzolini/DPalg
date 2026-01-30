@@ -1,5 +1,5 @@
 # DPalg
-R codes implementing MCMC algoritms for DP mixture of univariate Normals
+R codes implementing MCMC algorithms for DP mixture of univariate Normals
 
 Kernel:   y | mu ~ N(mu, sigma2)
 
@@ -54,3 +54,4 @@ library(salso)          # version 0.3.53      to compute psm and point estimate
 
 
 For bug reporting purposes, e-mail [Beatrice Franzolini](https://beatricefranzolini.github.io/) (franzolini@pm.me).
+
