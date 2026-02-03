@@ -12,7 +12,7 @@ DP:       G ~ DP(alpha, N(mu0, tau20)) with alpha random
 ## Citation 
 Please cite the following publication if you use this repository in your research:
 
-[Franzolini, B.](https://beatricefranzolini.github.io/) & [Gaffi, F.](https://francescogaffi.github.io/), (2026). Complexity bounds for Dirichlet process slice samplers. ArXiv
+[Franzolini, B.](https://beatricefranzolini.github.io/) & [Gaffi, F.](https://francescogaffi.github.io/), (2026). Complexity bounds for Dirichlet process slice samplers. arXiv:2602.00878
 
 ## Contents 
 
@@ -54,4 +54,5 @@ library(salso)          # version 0.3.53      to compute psm and point estimate
 
 
 For bug reporting purposes, e-mail [Beatrice Franzolini](https://beatricefranzolini.github.io/) (franzolini@pm.me).
+
 
