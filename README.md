@@ -53,6 +53,7 @@ library(salso)          # version 0.3.53      to compute psm and point estimate
 ## Questions or bugs
 
 
-For bug reporting purposes, e-mail [Beatrice Franzolini](https://beatricefranzolini.github.io/) (franzolini@pm.me).
+For bug reporting purposes, e-mail [Beatrice Franzolini](https://beatricefranzolini.github.io/) (franzolini@pm.me)
+
 
 
